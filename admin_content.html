@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Регламент Администратора — Vexus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00BFFF; --bg:#050507; --bg2:#090b10; --bg3:#0d1018;
+  --text:#c8d8e8; --dim:#566878; --border:rgba(0,191,255,.18);
+  --red:#ff3e3e; --green:#00d48a; --yellow:#f0c040; --orange:#ff8c42;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;line-height:1.7;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,191,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,.02) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+.glow{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(0,191,255,.06) 0%,transparent 68%);pointer-events:none;z-index:0;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{width:280px;min-width:280px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 0;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:rgba(0,191,255,.2);border-radius:2px;}
+.logo-mini{display:flex;align-items:center;gap:12px;padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.logo-mini svg{width:32px;height:32px;filter:drop-shadow(0 0 8px rgba(0,191,255,.5));}
+.logo-mini span{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:3px;}
+.role-badge{display:inline-block;background:rgba(0,191,255,.1);border:1px solid rgba(0,191,255,.3);color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:2px;margin:0 20px 20px;text-transform:uppercase;}
+.nav-section{padding:0 20px;margin-bottom:6px;}
+.nav-section-title{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,.04);}
+.nav-link{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-radius:4px;font-size:13px;color:var(--dim);cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:2px;line-height:1.4;}
+.nav-link:hover{background:rgba(0,191,255,.06);color:var(--text);}
+.nav-link.active{background:rgba(0,191,255,.1);color:var(--cyan);}
+.nav-link .num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);min-width:22px;opacity:.7;margin-top:2px;}
+.main{flex:1;padding:48px 56px 80px;max-width:860px;}
+@media(max-width:768px){.sidebar{display:none}.main{padding:24px 20px 60px;max-width:100%;}}
+.doc-header{margin-bottom:40px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.doc-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;opacity:.7;}
+.doc-title{font-family:'Rajdhani',sans-serif;font-size:38px;font-weight:700;color:#fff;letter-spacing:2px;line-height:1.1;margin-bottom:10px;}
+.doc-version{display:flex;gap:16px;flex-wrap:wrap;}
+.doc-version span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);}
+.doc-version strong{color:var(--text);}
+.intro{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--cyan);border-radius:6px;padding:20px 24px;margin-bottom:36px;}
+.intro p{font-size:14px;line-height:1.75;margin-bottom:10px;}
+.intro p:last-child{margin-bottom:0;}
+.intro .warn{color:var(--red);font-size:13px;font-family:'JetBrains Mono',monospace;}
+.section{margin-bottom:44px;}
+.section-anchor{position:relative;top:-80px;visibility:hidden;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.section-num{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--cyan);background:rgba(0,191,255,.1);border:1px solid rgba(0,191,255,.2);padding:3px 10px;border-radius:3px;letter-spacing:1px;}
+.section-title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:1px;}
+.sub-title{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:600;color:var(--cyan);margin:20px 0 12px;letter-spacing:1px;}
+.rule-list{list-style:none;padding:0;}
+.rule-list li{padding:12px 16px 12px 44px;position:relative;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px;line-height:1.7;}
+.rule-list li::before{content:'›';position:absolute;left:16px;color:var(--cyan);font-size:18px;font-weight:700;line-height:1.5;}
+.rule-list li:last-child{border-bottom:none;}
+.rule-list li strong{color:#fff;}
+.rule-list li.sub{padding-left:64px;font-size:13px;color:var(--dim);}
+.rule-list li.sub::before{content:'·';left:44px;color:var(--dim);font-size:20px;}
+.punish{background:var(--bg3);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:16px 0;}
+.punish-row{display:flex;border-bottom:1px solid var(--border);}
+.punish-row:last-child{border-bottom:none;}
+.punish-rule{flex:0 0 180px;padding:11px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);background:rgba(0,191,255,.04);border-right:1px solid var(--border);}
+.punish-desc{flex:1;padding:11px 14px;font-size:13px;line-height:1.6;}
+.punish-val{flex:0 0 180px;padding:11px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--yellow);text-align:right;}
+.punish-header .punish-rule,.punish-header .punish-desc,.punish-header .punish-val{font-size:10px;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;padding:8px 14px;background:rgba(255,255,255,.02);}
+@media(max-width:600px){.punish-row{flex-direction:column;}.punish-rule,.punish-val{flex:none;width:100%;}}
+.code-block{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--cyan);margin:14px 0;line-height:2;}
+.code-block .cmd{color:#fff;}
+.box-warn{background:rgba(255,62,62,.06);border:1px solid rgba(255,62,62,.2);border-left:3px solid var(--red);border-radius:4px;padding:14px 18px;margin:14px 0;font-size:13px;color:#ffaaaa;line-height:1.6;}
+.box-info{background:rgba(0,191,255,.05);border:1px solid rgba(0,191,255,.2);border-left:3px solid var(--cyan);border-radius:4px;padding:14px 18px;margin:14px 0;font-size:13px;line-height:1.6;}
+.box-ok{background:rgba(0,212,138,.05);border:1px solid rgba(0,212,138,.2);border-left:3px solid var(--green);border-radius:4px;padding:14px 18px;margin:14px 0;font-size:13px;color:#aaffdd;line-height:1.6;}
+.box-orange{background:rgba(255,140,66,.05);border:1px solid rgba(255,140,66,.2);border-left:3px solid var(--orange);border-radius:4px;padding:14px 18px;margin:14px 0;font-size:13px;color:#ffd0aa;line-height:1.6;}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px;}
+th{background:rgba(0,191,255,.07);padding:10px 14px;text-align:left;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:1.5px;text-transform:uppercase;border-bottom:2px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+tr:hover td{background:rgba(0,191,255,.02);}
+.ban-table{width:100%;border-collapse:collapse;margin:14px 0;}
+.ban-table td{padding:6px 12px;font-family:'JetBrains Mono',monospace;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04);}
+.ban-table td:first-child{color:var(--cyan);width:80px;}
+.ban-table td:last-child{color:var(--text);}
+.doc-footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);line-height:2;}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="layout">
+
+<nav class="sidebar">
+  <div class="logo-mini">
+    <svg viewBox="0 0 100 100" fill="none">
+      <circle cx="50" cy="50" r="44" stroke="#00BFFF" stroke-width="7"/>
+      <circle cx="50" cy="50" r="14" stroke="#00BFFF" stroke-width="7"/>
+      <line x1="50" y1="6" x2="50" y2="36" stroke="#00BFFF" stroke-width="7" stroke-linecap="round"/>
+      <line x1="50" y1="64" x2="50" y2="94" stroke="#00BFFF" stroke-width="7" stroke-linecap="round"/>
+      <line x1="10" y1="28" x2="36" y2="43" stroke="#00BFFF" stroke-width="7" stroke-linecap="round"/>
+      <line x1="64" y1="57" x2="90" y2="72" stroke="#00BFFF" stroke-width="7" stroke-linecap="round"/>
+      <line x1="10" y1="72" x2="36" y2="57" stroke="#00BFFF" stroke-width="7" stroke-linecap="round"/>
+      <line x1="64" y1="43" x2="90" y2="28" stroke="#00BFFF" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+    <span>VEXUS</span>
+  </div>
+  <div class="role-badge">⚙️ Администратор</div>
+  <div class="nav-section">
+    <div class="nav-section-title">Содержание</div>
+    <a class="nav-link" href="#s1"><span class="num">1</span>Обязанности и правила</a>
+    <a class="nav-link" href="#s11"><span class="num">1.1</span>Особое положение</a>
+    <a class="nav-link" href="#s12"><span class="num">1.2</span>Стажёрство</a>
+    <a class="nav-link" href="#s13"><span class="num">1.3</span>Правила разборок</a>
+    <a class="nav-link" href="#s2"><span class="num">2</span>Норма</a>
+    <a class="nav-link" href="#s3"><span class="num">3</span>Система наказаний</a>
+    <a class="nav-link" href="#s4"><span class="num">4</span>Взаимодействие</a>
+    <a class="nav-link" href="#s5"><span class="num">5</span>Качество разборок</a>
+    <a class="nav-link" href="#s6"><span class="num">6</span>Выдача наказаний</a>
+    <a class="nav-link" href="#s61"><span class="num">6.1</span>Основные правила</a>
+    <a class="nav-link" href="#s62"><span class="num">6.2</span>Как проводить разборки</a>
+    <a class="nav-link" href="#s63"><span class="num">6.3</span>Наказания игроков</a>
+    <a class="nav-link" href="#s64"><span class="num">6.4</span>Бан по ошибке</a>
+    <a class="nav-link" href="#s7"><span class="num">7</span>Читеры</a>
+    <a class="nav-link" href="#s8"><span class="num">8</span>Стрессовые ситуации</a>
+    <a class="nav-link" href="#s9"><span class="num">9</span>Админ панель</a>
+    <a class="nav-link" href="#s91"><span class="num">9.1</span>F3 Консоль</a>
+    <a class="nav-link" href="#s10"><span class="num">10</span>Об админ абузе</a>
+    <a class="nav-link" href="#s11r"><span class="num">11</span>Отпуск</a>
+    <a class="nav-link" href="#s12r"><span class="num">12</span>Руководство</a>
+    <a class="nav-link" href="#s13r"><span class="num">13</span>Права руководства</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="doc-header">
+    <div class="doc-badge">📄 Основной документ · v1</div>
+    <div class="doc-title">Регламент Администратора</div>
+    <div class="doc-version">
+      <span>Проект: <strong>Vexus</strong></span>
+      <span>Версия: <strong>v1</strong></span>
+      <span>Обновлён: <strong>30 янв. 2026 г.</strong></span>
+      <span>Автор: <strong>Vusarius</strong></span>
+    </div>
+  </div>
+
+  <div class="intro">
+    <p>Здравствуй, дорогой администратор! В этом регламенте расписаны правила, обязанности и команды которые тебе потребуются для работы на проекте Vexus.</p>
+    <p>Вступая на должность, Вы автоматически подтверждаете, что ознакомились с регламентом и обязуетесь выполнять все требования. Регламент может меняться без объявления — сверяйтесь с информацией.</p>
+    <p class="warn">⚠ Распространение данного документа третьим лицам строго запрещено. Нарушение — снятие, блокировка и статус «угроза проекта».</p>
+  </div>
+
+  <!-- §1 -->
+  <div id="s1" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 1</span><span class="section-title">Обязанности и правила администратора</span></div>
+    <ul class="rule-list">
+      <li><strong>Знать правила</strong> игрового сервера и свои обязанности.</li>
+      <li>Находиться на Discord сервере Vexus с соответствующими ролями и никнеймом, совпадающим с ником на игровом сервере.</li>
+      <li>Все выданные наказания записывать в канал <strong>⛔┃баны</strong>.</li>
+      <li>Слушать и уважать старших по званию, выполнять указы и распоряжения.</li>
+      <li>Запрещается выдавать наказание без <strong>объяснения причины</strong>.</li>
+      <li class="sub">Исключение: игрок вышел с сервера во время объяснения.</li>
+      <li class="sub">Исключение: бан читера — можно без объяснения.</li>
+      <li>Не портить авторитет. Конфликты — лучше в личных сообщениях.</li>
+      <li>Строго запрещено использовать <strong>читы или эксплойты</strong> на серверах SCP: CB Multiplayer Reborn. Нарушение — увольнение и перм. чёрный список.</li>
+    </ul>
+  </div>
+
+  <!-- §1.1 -->
+  <div id="s11" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 1.1</span><span class="section-title">Ваше особое положение</span></div>
+    <ul class="rule-list">
+      <li>Не имеете права оскорблять игроков. При нарушении — разбор и наказание.</li>
+      <li>Не имеете права мешать игрокам с помощью команд.</li>
+      <li>Не должны провоцировать игроков на нарушение правил.</li>
+      <li>Имеете право дискутировать с начальством о приказах и правилах.</li>
+      <li>Нельзя использовать команды, <strong>когда у вас нет плашки</strong> — вы считаетесь обычным игроком.</li>
+    </ul>
+  </div>
+
+  <!-- §1.2 -->
+  <div id="s12" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 1.2</span><span class="section-title">Админ-стажёрство</span></div>
+    <ul class="rule-list">
+      <li>При вступлении — сначала этап стажировки.</li>
+      <li>Разборки проводить только <strong>с записью экрана</strong>. После — отправить главе или заму администрации.</li>
+      <li>После <strong>5 разборок</strong> — полноценный администратор.</li>
+      <li class="sub">Некорректная разборка → не засчитывается. Повтор → варн. 2 варна → снятие + чёрный список 1 месяц.</li>
+    </ul>
+  </div>
+
+  <!-- §1.3 -->
+  <div id="s13" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 1.3</span><span class="section-title">Правила разборок</span></div>
+    <ul class="rule-list">
+      <li>Уважать нарушителя — нарушение не лишает его статуса игрока.</li>
+      <li>Перед телепортацией на разборки — <strong>сделать скриншот Steam-профиля</strong> со ссылкой. Потом объяснить что будут разборки и предупредить о запрете выхода.</li>
+      <li>Перед наказанием — обязательно объяснить игроку за что.</li>
+    </ul>
+  </div>
+
+  <!-- §2 -->
+  <div id="s2" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 2</span><span class="section-title">Норма администратора</span></div>
+    <div class="box-info">У администрации нет нормы. Но это не повод не работать. Если глава увидит бездействие — выдаст варн.</div>
+  </div>
+
+  <!-- §3 -->
+  <div id="s3" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 3</span><span class="section-title">Система наказаний в сторону администратора</span></div>
+    <ul class="rule-list">
+      <li><strong>Предупреждение (Пред)</strong> — устный выговор от главы. Последний шанс перед выговором.</li>
+      <li>При нарушении регламента/правил — выговор. При серьёзных — сразу 2.</li>
+      <li><strong>4 выговора</strong> — снятие с должности.</li>
+      <li>Срок выговора — <strong>1 месяц</strong> при отсутствии нарушений.</li>
+    </ul>
+    <div class="box-warn">Глава вправе уволить беспричинно, но это согласуется с главой проекта. Вы можете обратиться к нему.</div>
+  </div>
+
+  <!-- §4 -->
+  <div id="s4" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 4</span><span class="section-title">Взаимодействие с игроками</span></div>
+    <ul class="rule-list">
+      <li>Уважительный и вежливый тон всегда. Грубость, сарказм, насмешки — недопустимы.</li>
+      <li>Перед началом разборок — объяснить правила, дать игроку высказаться.</li>
+      <li>Жалобы и вопросы — выслушать без раздражения, передать руководству при необходимости.</li>
+      <li>Объективность — поблажки отдельным игрокам запрещены.</li>
+    </ul>
+  </div>
+
+  <!-- §5 -->
+  <div id="s5" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 5</span><span class="section-title">Качество разборок</span></div>
+    <ul class="rule-list">
+      <li>При разборках — объяснить за что получает бан/мут/кик, назвать пункт правил.</li>
+      <li>Наблюдать за опытными коллегами для повышения качества работы.</li>
+    </ul>
+  </div>
+
+  <!-- §6 -->
+  <div id="s6" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 6</span><span class="section-title">Выдача наказаний</span></div>
+
+    <div id="s61">
+      <div class="sub-title">6.1 Основные правила</div>
+      <ul class="rule-list">
+        <li>При нарушении — телепортируете в башню на гейтах и устраиваете разборки.</li>
+        <li>Первичное нарушение + признание вины → кик или снижение времени (кроме читеров и рейдеров).</li>
+        <li>Если раунд закончился в момент разборок — возобновите в следующем раунде. Пропишите <code>kill</code>, заспавните за призрака (ID 25), телепортируйтесь в башню (<code>teleport 114</code>).</li>
+      </ul>
+      <div class="box-ok">ПОМНИТЕ! Ваша цель — объяснить нарушителю, что он нарушил правила.</div>
+    </div>
+
+    <div id="s62">
+      <div class="sub-title">6.2 Как проводить разборки</div>
+      <ul class="rule-list">
+        <li><strong>1.</strong> Сфотографировать SteamID64 или IP игрока (через попытку бана без подтверждения).</li>
+        <li><strong>2.</strong> За призрака (ID 25) — телепортироваться к игроку и предупредить о разборках. Читеров и рейдеров можно банить без разборок.</li>
+        <li><strong>3.</strong> Проверить предыдущие наказания за это правило и побеги с разборок.</li>
+        <li><strong>4.</strong> Телепортировать игрока к себе (в башню), поздороваться, представиться как администратор Vexus.</li>
+        <li><strong>5.</strong> Назвать нарушенное правило и ожидаемое наказание (мут/бан/кик). Назвать пункт.</li>
+        <li><strong>6.</strong> Спросить, что игрок может сказать в свою защиту.</li>
+        <li><strong>7.</strong> Признание вины → кик (если бан до 30 мин) или снижение времени. Плохое поведение → повышение времени.</li>
+        <li><strong>8.</strong> Пожелать удачи (при хорошем поведении) и посоветовать прочитать правила.</li>
+      </ul>
+      <div class="box-info">
+        Таблица минут для бана:<br>
+        <table class="ban-table">
+          <tr><td>30</td><td>Полчаса</td><td>|</td><td>960</td><td>16 часов</td></tr>
+          <tr><td>60</td><td>Час</td><td>|</td><td>1440</td><td>Сутки</td></tr>
+          <tr><td>120</td><td>2 часа</td><td>|</td><td>2880</td><td>2 суток</td></tr>
+          <tr><td>180</td><td>3 часа</td><td>|</td><td>4320</td><td>3 дня</td></tr>
+          <tr><td>300</td><td>5 часов</td><td>|</td><td>10080</td><td>Неделя</td></tr>
+          <tr><td>420</td><td>7 часов</td><td>|</td><td>20160</td><td>2 недели</td></tr>
+          <tr><td>480</td><td>8 часов</td><td>|</td><td>40320</td><td>Месяц</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="s63">
+      <div class="sub-title">6.3 Наказания для игроков</div>
+      <div class="punish">
+        <div class="punish-row punish-header">
+          <div class="punish-rule">Правило</div>
+          <div class="punish-desc">Нарушение</div>
+          <div class="punish-val">Наказание</div>
+        </div>
+        <div class="punish-row"><div class="punish-rule">1.1 — Читы</div><div class="punish-desc">Использование читов / стороннего ПО</div><div class="punish-val">Бан навсегда</div></div>
+        <div class="punish-row"><div class="punish-rule">1.1 — Читы</div><div class="punish-desc">Автокликер</div><div class="punish-val">Не запрещён</div></div>
+        <div class="punish-row"><div class="punish-rule">1.2 — Мудачество</div><div class="punish-desc">Закрытие союзников в газовых камерах</div><div class="punish-val">Пред / кик; повтор → бан до 120 мин</div></div>
+        <div class="punish-row"><div class="punish-rule">1.2 — Мудачество</div><div class="punish-desc">Мешает мини-ивентам</div><div class="punish-val">Предупреждение; игнор → бан до 150 мин</div></div>
+        <div class="punish-row"><div class="punish-rule">1.3 — Тимминг</div><div class="punish-desc">Тимминг с врагами, затягивание раунда</div><div class="punish-val">Предупреждение; игнор → бан до 300 мин</div></div>
+        <div class="punish-row"><div class="punish-rule">1.4 — Багоюз</div><div class="punish-desc">Использование багов для преимущества</div><div class="punish-val">Кик / бан до 600 мин</div></div>
+        <div class="punish-row"><div class="punish-rule">1.5 — Вред</div><div class="punish-desc">DOS/DDOS атаки на сервер</div><div class="punish-val">Перм. бан + «угроза проекту»</div></div>
+        <div class="punish-row"><div class="punish-rule">2.1 — Оскорбление</div><div class="punish-desc">Оскорбление игрока (1 раз)</div><div class="punish-val">Пред / мут / кик</div></div>
+        <div class="punish-row"><div class="punish-rule">2.1 — Оскорбление</div><div class="punish-desc">Оскорбление администратора/персонала</div><div class="punish-val">Кик / бан до 360 мин</div></div>
+        <div class="punish-row"><div class="punish-rule">2.2 — Политика</div><div class="punish-desc">Политическая ругань / политические песни</div><div class="punish-val">Мут; повтор → бан до 300 мин</div></div>
+        <div class="punish-row"><div class="punish-rule">2.4 — Самозванство</div><div class="punish-desc">Пародирование администратора</div><div class="punish-val">Бан до 2880 мин (2 суток)</div></div>
+        <div class="punish-row"><div class="punish-rule">2.5 — Обман</div><div class="punish-desc">Обман администратора во время разборок</div><div class="punish-val">Бан до 360 мин</div></div>
+        <div class="punish-row"><div class="punish-rule">Прочее</div><div class="punish-desc">AFK более одного раунда</div><div class="punish-val">Кик с сервера</div></div>
+        <div class="punish-row"><div class="punish-rule">Прочее</div><div class="punish-desc">Повторное нарушение</div><div class="punish-val">× 2 к наказанию</div></div>
+      </div>
+    </div>
+
+    <div id="s64">
+      <div class="sub-title">6.4 Бан по ошибке</div>
+      <ul class="rule-list">
+        <li>Выдать наказание тому, кому собирались.</li>
+        <li>Если знаете SteamID64/IP — зайдите в 2-й раздел панели и разбаньте.</li>
+        <li>Если не знаете — доложите главе или разработчику, найдите игрока в Discord.</li>
+        <li><strong>Извинитесь</strong> перед пострадавшим в ЛС.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- §7 -->
+  <div id="s7" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 7</span><span class="section-title">Читеры и их читы</span></div>
+    <div class="box-orange">На момент написания регламента мало информации о читах. Список будет обновляться.</div>
+
+    <table>
+      <tr><th>Чит</th><th>Описание</th></tr>
+      <tr><td><strong>Noclip</strong></td><td>Полёт сквозь стены по зажатию клавиши</td></tr>
+      <tr><td><strong>Wallhack</strong></td><td>Видит сквозь стены: ник, роль, расстояние</td></tr>
+      <tr><td><strong>Бесконечные патроны</strong></td><td>Магазин никогда не кончается</td></tr>
+      <tr><td><strong>Быстрая скорострельность</strong></td><td>Стреляет из любого оружия с огромной скоростью</td></tr>
+      <tr><td><strong>Speedhack</strong></td><td>Крайне быстрое передвижение, частые звуки шагов</td></tr>
+      <tr><td><strong>Бесконечная стамина</strong></td><td>Никогда не замедляется, Бхоп ускоряет до предела</td></tr>
+    </table>
+
+    <ul class="rule-list">
+      <li>На <strong>100% уверены</strong> что читер → бан на 0 минут (перм. бан).</li>
+      <li>Если читер вернулся обойдя бан → бан снова.</li>
+    </ul>
+  </div>
+
+  <!-- §8 -->
+  <div id="s8" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 8</span><span class="section-title">Поведение в стрессовых ситуациях</span></div>
+    <ul class="rule-list">
+      <li>Спокойствие и нейтральность в любых конфликтных ситуациях.</li>
+      <li>Провокации на разборках — оставаться профессиональным.</li>
+      <li>Агрессия, насмешки, угрозы — не приветствуются.</li>
+      <li>При усталости — взять отпуск (§ 11).</li>
+    </ul>
+  </div>
+
+  <!-- §9 -->
+  <div id="s9" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 9</span><span class="section-title">Админ панель</span></div>
+    <div class="box-info"><strong>PID (Player ID)</strong> — нумерация игрока на сервере. Меняется при перезаходе или рестарте.</div>
+
+    <div class="sub-title">Открытие панелей</div>
+    <div class="code-block">
+      <div><span class="cmd">F2</span> или <span class="cmd">/panel</span> → «Админ-панель» — серверная панель</div>
+      <div><span class="cmd">P</span> → ПКМ → двойной клик на игроке → «Админ-панель» — панель игрока</div>
+    </div>
+
+    <div class="sub-title">Вкладка «Управление раундом»</div>
+    <ul class="rule-list">
+      <li><strong>Начать раунд</strong> — преждевременно начать, игнорируя количество игроков и таймер.</li>
+      <li><strong>Рестарт раунда</strong> — возврат в лобби. Использовать нежелательно.</li>
+      <li><strong>Установить время</strong> — в лобби или в раунде (в секундах).</li>
+      <li><strong>Спавн</strong> — спавнит отряд, игнорируя таймер (случайный).</li>
+      <li><strong>Сообщение всем</strong> — написать в чат от имени сервера (до 64 символов).</li>
+      <li><strong>Создать бота</strong> — только с разрешения главы ивентеров или для ивента.</li>
+    </ul>
+
+    <div class="sub-title">Вкладка «Управление игроками»</div>
+    <ul class="rule-list">
+      <li><strong>Телепорт всех к Вам</strong> — все на сервере телепортируются к вам.</li>
+      <li><strong>Телепорт игрока к игроку</strong> — [PID1] к [PID2].</li>
+      <li><strong>Разбанить игрока</strong> — по IP или SteamID64. <span style="color:var(--red)">Вы не имеете права использовать эту команду.</span></li>
+    </ul>
+
+    <div class="sub-title">Панель управления игроком</div>
+    <ul class="rule-list">
+      <li><strong>Бан</strong> — <span style="color:var(--red)">вы не имеете права использовать эту команду.</span></li>
+      <li><strong>Кик</strong> — выгнать игрока с возможностью вернуться.</li>
+      <li><strong>Мут</strong> — блокировка чата на весь раунд. Повторная выдача снимает.</li>
+      <li><strong>Выдать роль</strong> — по ID роли (смотри таблицу ролей).</li>
+      <li><strong>Выдать предмет</strong> — по консольному названию (не ID).</li>
+      <li><strong>Телепорт к игроку / игрока</strong> — взаимная телепортация.</li>
+      <li><strong>Установить скорость</strong> — стандарт 1.0, отрицательное — инвертирует управление.</li>
+      <li><strong>Установить модель / текстуру / размер</strong> — смотри таблицы.</li>
+    </ul>
+
+    <div class="sub-title">Вкладка «Управление сервером»</div>
+    <div class="box-warn">Рестарт сервера — только с разрешения главы ивентеров или его зама. Обязательно предупредить игроков за 1 минуту до рестарта!</div>
+  </div>
+
+  <!-- §9.1 -->
+  <div id="s91" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 9.1</span><span class="section-title">F3 Консоль</span></div>
+    <div class="box-info">Если консоль не включается — Настройки → Прочее → включить строку «Консоль». Клавишу можно переназначить в настройках управления.</div>
+    <div class="code-block">
+      <div><span class="cmd">noclip / fly</span> — включить/выключить полёт сквозь стены</div>
+      <div><span class="cmd">noclipspeed</span> — скорость полёта (по умолчанию: 2.0)</div>
+      <div><span class="cmd">spawnitem [name/ID]</span> — заспавнить предмет для подбора</div>
+      <div><span class="cmd">teleport [room name/ID]</span> — телепорт в комнату. <span style="opacity:.6">room list</span> — список комнат</div>
+      <div><span class="cmd">kill</span> — аналог /suicide, без сообщения в чат</div>
+    </div>
+  </div>
+
+  <!-- §10 -->
+  <div id="s10" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 10</span><span class="section-title">Об админ абузе</span></div>
+    <div class="box-warn"><strong>Админ абуз</strong> — злоупотребление полномочиями: создание выгоды себе или игрокам, нарушение баланса, а также любые «пустяки» с правами (летать ради фана, спамить спавном предметов и т.д.).</div>
+    <div class="sub-title">Запрещено в раунде:</div>
+    <ul class="rule-list">
+      <li>Вызывать отряды через панель, не соблюдая время их прибытия.</li>
+      <li>Спавнить кого-либо (и себя) за роль просто так, вне разборок.</li>
+      <li>Включать/выключать ядерные боеголовки Альфа телепортацией.</li>
+      <li>Целенаправленно затягивать раунд через панель или рычаги боеголовок.</li>
+      <li>Перемещать между зонами игроков, которых вытащили из-под карты (исключение: офисы→гейты).</li>
+      <li>Использовать вне разборок: <code>godmode</code>, <code>wireframe</code>, <code>heal</code> и прочее.</li>
+      <li>Мутить игроков, просто разговаривающих в голосовом чате.</li>
+      <li>Давать игрокам предметы в инвентарь.</li>
+      <li>Блокировать чекпоинты и гейты (только в рамках ивентов).</li>
+      <li>Менять размер, скорость игрокам для получения преимущества.</li>
+    </ul>
+  </div>
+
+  <!-- §11 (отпуск) -->
+  <div id="s11r" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 11</span><span class="section-title">Отпуск и выходные дни</span></div>
+    <ul class="rule-list">
+      <li>Уведомить главу администрации или зама о взятии отпуска.</li>
+      <li>Сделать приписку в нике Discord: <code style="color:var(--cyan)">Vusarius (в отпуске)</code>.</li>
+      <li>При заходе на игровой сервер в отпуске — также добавить приписку к нику в игре. <strong>Запрещено</strong> использовать панель и консоль в личных целях (кроме наказания нарушителей).</li>
+      <li>После отпуска — нельзя брать следующий без разрешения, если <strong>не прошло 2 недели</strong>.</li>
+    </ul>
+  </div>
+
+  <!-- §12 -->
+  <div id="s12r" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 12</span><span class="section-title">Ваше руководство</span></div>
+    <table>
+      <tr><th>Никнейм</th><th>Должность</th><th>Описание</th></tr>
+      <tr><td><strong>Vusarius</strong></td><td>Глава проекта</td><td>Опыт в ивентах. Читайте сообщения с позитивной интонацией! Отвечает быстро.</td></tr>
+    </table>
+  </div>
+
+  <!-- §13 -->
+  <div id="s13r" class="section">
+    <span class="section-anchor"></span>
+    <div class="section-header"><span class="section-num">§ 13</span><span class="section-title">Особые права руководства</span></div>
+    <div class="sub-title">Глава администрации:</div>
+    <ul class="rule-list">
+      <li>Выдаёт варны.</li>
+      <li>Проводит собеседования.</li>
+      <li>Является главой — его приказы обязательны.</li>
+      <li>Проверяет и одобряет/отклоняет заявки.</li>
+    </ul>
+    <div class="sub-title">Заместитель главы:</div>
+    <ul class="rule-list">
+      <li>Может проводить собеседования.</li>
+      <li>Его приказы обязательны (выше — только глава администрации).</li>
+    </ul>
+  </div>
+
+  <div class="doc-footer">
+    <div>Данный документ создан первым главой администрации Vexus — Vusarius.</div>
+    <div>V1 — 10 ноября 2025 г.</div>
+  </div>
+</main>
+</div>
+<script>
+const links = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#'+e.target.id));
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
