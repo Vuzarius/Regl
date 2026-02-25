@@ -468,23 +468,31 @@ function resetCodeCells(cls) {
   });
 }
 
-// ── Верификация ────────────────────────────────────────────────
-// Коды загружаются live через GitHub Raw API (с ?t=timestamp чтобы обойти кэш).
-// Формат codes.js: PORTAL_CODES = { "discordId|role": { code, key, exp } }
+// ── Загрузка свежих кодов через GitHub Contents API ───────────
+// Contents API поддерживает CORS и возвращает base64-контент файла.
+// cache:'no-store' + уникальный ?t= гарантируют обход любого кэша.
 
-const CODES_RAW_URL = 'https://raw.githubusercontent.com/vuzarius/Regl/main/codes.js';
+const GH_REPO   = 'vuzarius/Regl';
+const GH_BRANCH = 'main';
+const GH_FILE   = 'codes.js';
 
 async function fetchFreshCodes() {
-  const url = CODES_RAW_URL + '?t=' + Date.now();
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Не удалось загрузить коды (' + res.status + ')');
-  const text = await res.text();
-  // Выполняем JS-текст в изолированном контексте и достаём PORTAL_CODES
-  const match = text.match(/const PORTAL_CODES\s*=\s*(\{[\s\S]*?\});/);
+  const url = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`;
+  const res = await fetch(url, {
+    cache: 'no-store',
+    headers: { 'Accept': 'application/vnd.github+json' }
+  });
+  if (!res.ok) throw new Error('GitHub API: ' + res.status);
+  const json = await res.json();
+  // Файл приходит в base64 — декодируем
+  const text = atob(json.content.replace(/\n/g, ''));
+  // Извлекаем JSON-объект из  PORTAL_CODES = {...};
+  const match = text.match(/PORTAL_CODES\s*=\s*(\{[\s\S]*\});/);
   if (!match) throw new Error('Неверный формат codes.js');
   return JSON.parse(match[1]);
 }
 
+// ── Верификация ────────────────────────────────────────────────
 async function verifyCode() {
   const discordId = document.getElementById('discordIdInput').value.trim();
   const code      = getCode();
@@ -499,7 +507,7 @@ async function verifyCode() {
     return;
   }
 
-  // Блокируем кнопку и показываем загрузку
+  // Блокируем кнопку и показываем статус загрузки
   const btn = document.getElementById('btnVerify');
   btn.disabled = true;
   showAlert('alert3', 'info', '⏳ Проверяем код...');
@@ -509,10 +517,9 @@ async function verifyCode() {
     portalCodes = await fetchFreshCodes();
   } catch (e) {
     btn.disabled = false;
-    showAlert('alert3', 'err', 'Ошибка загрузки: ' + e.message);
+    showAlert('alert3', 'err', 'Ошибка загрузки кодов: ' + e.message);
     return;
   }
-
   btn.disabled = false;
 
   const lookup = discordId + '|' + selectedReg;
