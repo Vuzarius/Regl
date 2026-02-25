@@ -468,25 +468,17 @@ function resetCodeCells(cls) {
   });
 }
 
-// ── Загрузка свежих кодов через GitHub Contents API ───────────
-// Contents API поддерживает CORS и возвращает base64-контент файла.
-// cache:'no-store' + уникальный ?t= гарантируют обход любого кэша.
-
-const GH_REPO   = 'vuzarius/Regl';
-const GH_BRANCH = 'main';
-const GH_FILE   = 'codes.js';
+// ── Загрузка свежих кодов ─────────────────────────────────────
+// jsDelivr CDN имеет публичный purge API — бот вызывает его сразу после
+// записи codes.js, поэтому файл всегда актуален без задержки.
+// Для надёжности грузим через fetch с cache:'no-store'.
 
 async function fetchFreshCodes() {
-  const url = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}?ref=${GH_BRANCH}&t=${Date.now()}`;
-  const res = await fetch(url, {
-    cache: 'no-store',
-    headers: { 'Accept': 'application/vnd.github+json' }
-  });
-  if (!res.ok) throw new Error('GitHub API: ' + res.status);
-  const json = await res.json();
-  // Файл приходит в base64 — декодируем
-  const text = atob(json.content.replace(/\n/g, ''));
-  // Извлекаем JSON-объект из  PORTAL_CODES = {...};
+  // jsDelivr отдаёт файлы из GitHub с мгновенным обновлением после purge
+  const url = 'https://cdn.jsdelivr.net/gh/vuzarius/Regl@main/codes.js?t=' + Date.now();
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Ошибка загрузки: ' + res.status);
+  const text = await res.text();
   const match = text.match(/PORTAL_CODES\s*=\s*(\{[\s\S]*\});/);
   if (!match) throw new Error('Неверный формат codes.js');
   return JSON.parse(match[1]);
@@ -507,7 +499,6 @@ async function verifyCode() {
     return;
   }
 
-  // Блокируем кнопку и показываем статус загрузки
   const btn = document.getElementById('btnVerify');
   btn.disabled = true;
   showAlert('alert3', 'info', '⏳ Проверяем код...');
@@ -530,25 +521,21 @@ async function verifyCode() {
     showAlert('alert3', 'err', 'Код не найден. Запроси новый командой !reg');
     return;
   }
-
   if (Date.now() / 1000 > entry.exp) {
     markWrong();
     showAlert('alert3', 'err', 'Код истёк. Запроси новый командой !reg');
     return;
   }
-
   if (entry.code !== code) {
     markWrong();
     showAlert('alert3', 'err', 'Неверный код');
     return;
   }
 
-  // Успех
   [0,1,2,3].forEach(i => document.getElementById('c'+i).classList.add('right'));
   showAlert('alert3', 'ok', '✓ Верификация пройдена! Открываем регламент...');
   setTimeout(() => openRegulation(entry.key, selectedReg), 900);
 }
-
 function markWrong() {
   [0,1,2,3].forEach(i => document.getElementById('c'+i).classList.add('wrong'));
   setTimeout(() => resetCodeCells(), 700);
@@ -603,7 +590,6 @@ function clearAlert(id) {
   el.textContent = '';
 }
 </script>
-
 
 </body>
 </html>
