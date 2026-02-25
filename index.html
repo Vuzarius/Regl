@@ -469,10 +469,21 @@ function resetCodeCells(cls) {
 }
 
 // ── Верификация ────────────────────────────────────────────────
-// Коды хранятся в PORTAL_CODES — объект который бот генерирует и записывает
-// в codes.js (подключается ниже). Формат:
-// { "123456789012345678|moderator": { key: "...", exp: 1234567890 } }
-// Сайт просто смотрит есть ли совпадение и не протух ли код.
+// Коды загружаются live через GitHub Raw API (с ?t=timestamp чтобы обойти кэш).
+// Формат codes.js: PORTAL_CODES = { "discordId|role": { code, key, exp } }
+
+const CODES_RAW_URL = 'https://raw.githubusercontent.com/vuzarius/Regl/main/codes.js';
+
+async function fetchFreshCodes() {
+  const url = CODES_RAW_URL + '?t=' + Date.now();
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Не удалось загрузить коды (' + res.status + ')');
+  const text = await res.text();
+  // Выполняем JS-текст в изолированном контексте и достаём PORTAL_CODES
+  const match = text.match(/const PORTAL_CODES\s*=\s*(\{[\s\S]*?\});/);
+  if (!match) throw new Error('Неверный формат codes.js');
+  return JSON.parse(match[1]);
+}
 
 async function verifyCode() {
   const discordId = document.getElementById('discordIdInput').value.trim();
@@ -488,8 +499,24 @@ async function verifyCode() {
     return;
   }
 
+  // Блокируем кнопку и показываем загрузку
+  const btn = document.getElementById('btnVerify');
+  btn.disabled = true;
+  showAlert('alert3', 'info', '⏳ Проверяем код...');
+
+  let portalCodes;
+  try {
+    portalCodes = await fetchFreshCodes();
+  } catch (e) {
+    btn.disabled = false;
+    showAlert('alert3', 'err', 'Ошибка загрузки: ' + e.message);
+    return;
+  }
+
+  btn.disabled = false;
+
   const lookup = discordId + '|' + selectedReg;
-  const entry  = (typeof PORTAL_CODES !== 'undefined') ? PORTAL_CODES[lookup] : null;
+  const entry  = portalCodes[lookup];
 
   if (!entry) {
     markWrong();
@@ -570,8 +597,6 @@ function clearAlert(id) {
 }
 </script>
 
-<!-- Коды верификации — перегенерируется ботом при каждом !reg -->
-<script src="codes.js"></script>
 
 </body>
 </html>
